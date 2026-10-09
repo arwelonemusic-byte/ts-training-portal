@@ -22,7 +22,9 @@ export default function Navigation() {
   }, []);
 
   const avatarUrl = user?.avatar
-    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
+    ? user.avatar.startsWith("http")
+      ? user.avatar
+      : `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=64`
     : null;
 
   return (

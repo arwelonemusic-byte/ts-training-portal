@@ -17,6 +17,7 @@ export interface SessionPayload {
   userId: string;
   username: string;
   displayName: string; // server nickname or username
+  /** Discord's avatar hash (not a URL): each app builds the image URL. */
   avatar: string | null;
   roles: string[];
 }
