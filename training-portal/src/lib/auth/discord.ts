@@ -1,6 +1,6 @@
 const DISCORD_API = "https://discord.com/api/v10";
 
-export function getOAuthURL(): string {
+export function getOAuthURL(state: string): string {
   const clientId = process.env.DISCORD_CLIENT_ID!;
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
   const redirectUri = `${baseUrl}/api/auth/callback`;
@@ -10,6 +10,7 @@ export function getOAuthURL(): string {
     redirect_uri: redirectUri,
     response_type: "code",
     scope: "identify guilds.members.read",
+    state,
   });
 
   return `https://discord.com/oauth2/authorize?${params.toString()}`;

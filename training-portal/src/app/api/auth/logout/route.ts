@@ -1,15 +1,10 @@
 import { NextResponse } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session";
+import { clearedSessionCookie, SESSION_COOKIE_NAME } from "@/lib/auth/session";
 
+// The login is shared with TS Hub, so this logs out of both.
 export async function GET() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
   const response = NextResponse.redirect(baseUrl);
-  response.cookies.set(SESSION_COOKIE_NAME, "", {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-    maxAge: 0,
-  });
+  response.cookies.set(SESSION_COOKIE_NAME, "", clearedSessionCookie());
   return response;
 }

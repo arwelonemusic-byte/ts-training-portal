@@ -64,7 +64,7 @@ npm start        # Serve production build
 
 **Theme:** Dark neutral palette with red accent. CSS custom properties in `globals.css` via Tailwind `@theme`. Key tokens: `bg-primary` (#0f1114), `bg-card` (#16181d), `text-primary` (#e4e5e8), `text-secondary` (#7e828c), `accent-red` (#E13446). Green is used for success/completion states.
 
-**Auth & Sessions:** Discord OAuth2 (`guilds.members.read` scope). JWT session cookie (`ts_session`) stores user info. Session endpoint re-fetches roles from Discord via bot token on every request, so role changes apply on page refresh without re-login.
+**Auth & Sessions:** Discord OAuth2 (`guilds.members.read` scope, with an OAuth `state` check). The login is shared with TS Hub (since 2026-10-09; plan in ts-hub `docs/shared-login.md`): one JWT cookie, `ts_auth`, set on the parent domain in production (`AUTH_COOKIE_DOMAIN=tacticalshift.ru`) and signed with `TS_AUTH_SECRET`, the same value as the hub's. Logging in or out on either site does it for both, and `src/lib/auth/session.ts` must stay in step with the hub's `web/src/lib/auth/session.ts` (cookie, payload, options). Both apps use the same `DISCORD_ROLE_MAP`. Session endpoint re-fetches roles from Discord via bot token on every request, so role changes apply on page refresh without re-login.
 
 **Key files:**
 - `src/lib/auth/session.ts` — JWT create/verify, cookie config
@@ -75,7 +75,7 @@ npm start        # Serve production build
 - `src/lib/discord/webhook.ts` — posts to Discord channel on test pass (mid-tier vs tier completion)
 - `src/context/UserContext.tsx` — client-side user/roles/testResults state
 
-**Env vars (Vercel):** `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_GUILD_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_WEBHOOK_URL`, `DISCORD_ROLE_MAP` (JSON id→name), `DISCORD_APP_ID`, `SESSION_SECRET`, `DATABASE_URL`, `NEXT_PUBLIC_BASE_URL`
+**Env vars (Vercel):** `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_GUILD_ID`, `DISCORD_BOT_TOKEN`, `DISCORD_WEBHOOK_URL`, `DISCORD_ROLE_MAP` (JSON id→name), `DISCORD_APP_ID`, `TS_AUTH_SECRET`, `AUTH_COOKIE_DOMAIN`, `DATABASE_URL`, `NEXT_PUBLIC_BASE_URL`
 
 **Assets:** Formation GIFs in `public/animations/`. Manual images organized by manual in `public/manuals/{manual-id}/`. Logo SVG at `public/logo-icon.svg`.
 

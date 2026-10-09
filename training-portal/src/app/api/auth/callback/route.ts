@@ -1,13 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exchangeCode, fetchDiscordUser, fetchGuildMember, mapRoleIdsToNames } from "@/lib/auth/discord";
-import { createSessionToken, sessionCookieOptions } from "@/lib/auth/session";
+import { createSessionToken, sessionCookieOptions, STATE_COOKIE } from "@/lib/auth/session";
 
 export async function GET(request: NextRequest) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL!;
   const code = request.nextUrl.searchParams.get("code");
+  const state = request.nextUrl.searchParams.get("state");
 
   if (!code) {
     return NextResponse.redirect(`${baseUrl}/?error=no_code`);
+  }
+  if (!state || state !== request.cookies.get(STATE_COOKIE)?.value) {
+    return NextResponse.redirect(`${baseUrl}/?error=auth_failed`);
   }
 
   try {
@@ -39,6 +43,7 @@ export async function GET(request: NextRequest) {
     const response = NextResponse.redirect(baseUrl);
     const cookieOpts = sessionCookieOptions();
     response.cookies.set(cookieOpts.name, token, cookieOpts);
+    response.cookies.delete(STATE_COOKIE);
     return response;
   } catch (err) {
     console.error("OAuth callback error:", err);
